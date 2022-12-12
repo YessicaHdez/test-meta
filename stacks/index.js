@@ -1,5 +1,6 @@
 import { MetadataDB } from "./MetadataDB";
 import { ApiStack } from "./ApiStack";
+import { AuthStack } from "./AuthStack";
 
 export default function main(app) {
   app.setDefaultFunctionProps({
@@ -9,5 +10,5 @@ export default function main(app) {
       format: "esm",
     },
   });
-  app.stack(MetadataDB).stack(ApiStack);
+  app.stack(MetadataDB).stack(ApiStack).stack(AuthStack);
 }
