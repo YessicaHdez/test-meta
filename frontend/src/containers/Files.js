@@ -5,7 +5,7 @@ import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
 
-export default function Home() {
+export default function Files() {
   const [items, setItems] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +17,7 @@ export default function Home() {
       }
   
       try {
-        API.get("metadata", "/dataElement").then((response) => {
+        API.get("metadata", "/files").then((response) => {
         const items = response;
         setItems(items);
         })
@@ -40,22 +40,13 @@ export default function Home() {
   function renderItemsList(items) {
     return (
       <>
-        <LinkContainer to="/notes/new">
-          <ListGroup.Item action className="py-3 text-nowrap text-truncate">
-           
-            <span className="ml-2 font-weight-bold">Create a new </span>
-          </ListGroup.Item>
-        </LinkContainer>
-        {items.map(({ catalog, dataElement }) => (
+        {items.map(({ Key}) => (
           
             <ListGroup.Item action>
               <span className="font-weight-bold">
-                {dataElement}
+                {Key}
               </span>
               <br />
-              <span className="font-weight-bold">
-                {catalog}
-              </span>
               
             </ListGroup.Item>
           
