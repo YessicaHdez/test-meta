@@ -3,21 +3,26 @@ import { MetadataDB } from "./MetadataDB";
 
 export function ApiStack({ stack, app }) {
   const { table } = use(MetadataDB);
-
+  const { bucket } = use(MetadataDB);
   // Create the API
   const api = new Api(stack, "Api", {
     defaults: {
       function: {
         authorizer: "iam",
-        permissions: [table],
+        permissions: [table,bucket],
         environment: {
           TABLE_NAME: table.tableName,
+          BUCKET_NAME: bucket.bucketName,
+          BUCKET_REGION:app.region,
+          BUCKET_ARN:bucket.bucketArn,
         },
       },
+      
     },
     routes: {
       "POST /dataElement": "functions/create.main",
       "GET /dataElement": "functions/get.main",
+      "GET /files": "functions/getFiles.main",
       "PUT /dataElement/{dataelement}": "functions/update.main",
       "DELETE /dataElement/{dataelement}": "functions/delete.main",
     },

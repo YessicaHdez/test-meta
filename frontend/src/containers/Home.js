@@ -40,7 +40,7 @@ export default function Home() {
   function renderItemsList(items) {
     return (
       <>
-        <LinkContainer to="/notes/new">
+        <LinkContainer to="/newDataElement">
           <ListGroup.Item action className="py-3 text-nowrap text-truncate">
            
             <span className="ml-2 font-weight-bold">Create a new </span>
@@ -67,8 +67,8 @@ export default function Home() {
   function renderLander() {
     return (
       <div className="lander">
-        <h1>Scratch</h1>
-        <p className="text-muted">myapp</p>
+        <h1> Metadata Management</h1>
+        <p className="text-muted"></p>
       </div>
     );
   }

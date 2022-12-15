@@ -10,7 +10,7 @@ import "./Login.css";
 
 export default function Login() {
   const nav = useNavigate();
-  const { userHasAuthenticated } = useAppContext();
+  const {userHasAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
   const [fields, handleFieldChange] = useFormFields({
     email: "",
