@@ -4,7 +4,7 @@ import { useAppContext } from "../lib/ContextLib";
 import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
-import { createTrue } from "typescript";
+//import { createTrue } from "typescript";
 
 export default function Home() {
   const [items, setItems] = useState([]);
@@ -17,7 +17,6 @@ export default function Home() {
       if (!isAuthenticated) {
         return;
       }
-      
       try {
         API.get("metadata", "/dataElement").then((response) => {
         const items = response;
@@ -29,9 +28,9 @@ export default function Home() {
         
       } catch (e) {
         console.log(e);
-        setIsLoading(false);
+        
       }
-  
+      setIsLoading(false);
       
     }
   
