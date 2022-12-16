@@ -9,7 +9,7 @@ export function ApiStack({ stack, app }) {
     defaults: {
       function: {
         authorizer: "iam",
-        permissions: [table,bucket],
+        bind: [table,bucket],
         environment: {
           TABLE_NAME: table.tableName,
           BUCKET_NAME: bucket.bucketName,
@@ -21,10 +21,11 @@ export function ApiStack({ stack, app }) {
     },
     routes: {
       "POST /dataElement": "functions/create.main",
-      "GET /dataElement": "functions/get.main",
+      "GET /dataElement": "functions/getAll.main",
       "GET /files": "functions/getFiles.main",
-      "PUT /dataElement/{dataelement}": "functions/update.main",
-      "DELETE /dataElement/{dataelement}": "functions/delete.main",
+      "GET /dataElement/{dataElementid}": "functions/getDataElement.main",
+      "PUT /dataElement/update/{dataelementid}": "functions/update.main",
+      "DELETE /dataElement/delete/{dataelementid}": "functions/delete.main",
     },
   });
 

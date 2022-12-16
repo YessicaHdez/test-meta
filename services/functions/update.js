@@ -6,17 +6,16 @@ export const main = handler(async (event) => {
   const params = {
     TableName: process.env.TABLE_NAME,
     Key: {
-        dataElement: event.pathParameters.dataelement, 
+        dataElement: event.pathParameters.dataelementid, 
     },
-    UpdateExpression: "SET dataElement = :dataElement, catalog = :catalog",
-    ExpressionAttributeValues: {
-      ":dataElement": data.dataElement || null,
-      ":catalog": data.catalog || null,
+    UpdateExpression: "SET #cat = :val1",
+    ExpressionAttributeValues:{
+      ":val1": data.catalog,
     },
-    // 'ReturnValues' specifies if and how to return the item's attributes,
-    // where ALL_NEW returns all attributes of the item after the update; you
-    // can inspect 'result' below to see how it works with different settings
-    ReturnValues: "ALL_NEW",
+    ExpressionAttributeNames:{
+      "#cat": "catalog"
+    },
+    
   };
 
   await dynamoDb.update(params);

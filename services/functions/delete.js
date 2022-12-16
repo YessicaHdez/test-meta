@@ -6,7 +6,7 @@ export const main = handler(async (event) => {
     TableName: process.env.TABLE_NAME,
     // 'Key' defines the partition key and sort key of the item to be removed
     Key: {
-      dataElement: event.pathParameters.dataelement, // The id of the note from the path
+      dataElement: event.pathParameters.dataelementid, // The id of the note from the path
     },
   };
 

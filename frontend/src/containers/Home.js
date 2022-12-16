@@ -4,18 +4,20 @@ import { useAppContext } from "../lib/ContextLib";
 import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
+import { createTrue } from "typescript";
 
 export default function Home() {
   const [items, setItems] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
+  
 
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
         return;
       }
-  
+      
       try {
         API.get("metadata", "/dataElement").then((response) => {
         const items = response;
@@ -27,16 +29,14 @@ export default function Home() {
         
       } catch (e) {
         console.log(e);
+        setIsLoading(false);
       }
   
-      setIsLoading(false);
+      
     }
   
     onLoad();
   }, [isAuthenticated]);
-  
- 
-
   function renderItemsList(items) {
     return (
       <>
@@ -46,19 +46,19 @@ export default function Home() {
             <span className="ml-2 font-weight-bold">Create a new </span>
           </ListGroup.Item>
         </LinkContainer>
+        
         {items.map(({ catalog, dataElement }) => (
-          
-            <ListGroup.Item action>
+          <LinkContainer key={dataElement} to={`/dataElement/${dataElement}`}>
+            <ListGroup.Item  action >
               <span className="font-weight-bold">
                 {dataElement}
               </span>
               <br />
-              <span className="font-weight-bold">
+              <span className="font-weight-bold" >
                 {catalog}
               </span>
-              
-            </ListGroup.Item>
-          
+            </ListGroup.Item >
+          </LinkContainer>
         ))}
       </>
     );

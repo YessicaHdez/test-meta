@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import LoaderButton from "../components/LoaderButton";
 import { API } from "aws-amplify";
 import "./NewDataElement.css";
 
 import { useAppContext } from "../lib/ContextLib";
 
-export default function NewDataElement() {
+export default function DataElement() {
   
   const nav = useNavigate();
-  const [order, setOrder] = useState("");
+  const [order, setOrder] = useState(""); //logfile
   const [elenemt, setElement] = useState("");
   const [catalog, setCatalog] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { id } = useParams();
   const { isAuthenticated } = useAppContext();
 
   useEffect(() => {
@@ -22,10 +23,25 @@ export default function NewDataElement() {
       if (!isAuthenticated) {
         return;
       }
+
       try {
         API.get("metadata", "/dataElement/LogFile").then((response) => {
         const items = response;
-        setOrder(items.catalog);
+        setOrder(items.catalog); //get logfile data
+        })
+        .catch((error) => {
+            console.log(error.response);
+        });
+        
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+
+        API.get("metadata", `/dataElement/${id}`).then((response) => {
+        const items = response;
+        setCatalog(items.catalog); //catalog
+        setElement(items.dataElement);
         })
         .catch((error) => {
             console.log(error.response);
@@ -38,28 +54,46 @@ export default function NewDataElement() {
     }
   
     onLoad();
-  }, [isAuthenticated]);
+  }, [id]);
 
+  async function handleDelete(event){    
+    event.preventDefault();
 
+    const confirmed = window.confirm("Are you sure you want to delete this note?");
+    if (!confirmed) {
+    return;
+    }
+    setIsDeleting(true);
+    try {
+        await API.put("metadata", "/dataElement/update/LogFile",{body: {"catalog":order,"dataElement":"LogFile"}});
+        await API.del("metadata", `/dataElement/delete/${id}`);
+        nav("/");
+      } catch (e) {
+        console.log(e);
+        setIsDeleting(false);
+      }
+
+}
   function validateForm() {
     return catalog.length > 0;
     //setIsLoading(true);
   }
 
 
-  async function handleSubmit(event) {
+async function handleSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
+
     try {
-      await API.put("metadata", "/dataElement/update/LogFile",{body: {"catalog":order,"dataElement":"LogFile"}});
-      await API.post("metadata", "/dataElement",{body: {"catalog":catalog,"dataElement":elenemt}});
+      await API.put("metadata", `/dataElement/update/${id}`,{body: {"catalog":catalog,"dataElement":elenemt}})
+      
 
       nav("/home");
-      
     } catch (e) {
       console.log(e);
       setIsLoading(false);
     }
+
   }
 
   return (
@@ -72,7 +106,7 @@ export default function NewDataElement() {
             as="textarea"
             placeholder="Data Element"
             onChange={(e) => setElement(e.target.value)}
-            required
+            
           />
         </Form.Group>
         <Form.Label>Catalog</Form.Label>
@@ -82,29 +116,39 @@ export default function NewDataElement() {
             as="textarea"
             placeholder="value1,value2,value3"
             onChange={(e) => setCatalog(e.target.value)}
-            required
+            
           />
         </Form.Group>
-        <Form.Label>Order-Update LogFile order </Form.Label>
+        <LoaderButton
+          block="true"
+          type="submit"
+          size="lg"
+          variant="primary"
+          isLoading={isLoading}
+          disabled={!validateForm()}>
+          Edit
+        </LoaderButton>
+        <br></br>
+        <Form.Label>Order-Update LogFile order - ALTER BEFORE DELETE </Form.Label>
         <Form.Group controlId="order">
           <Form.Control
             value={order}
             as="textarea"
             placeholder="TestNetwork_Testsetup_Model_Firmware_Testcase_Timestamp.txt"
             onChange={(e) => setOrder(e.target.value)}
-            required
+            
           />
         </Form.Group>
         <LoaderButton
-          block
-          type="submit"
+          block="true"
           size="lg"
-          variant="primary"
-          isLoading={isLoading}
-          disabled={!validateForm()}
-        >
-          Create
+          variant="danger"
+          onClick={handleDelete}
+          isLoading={isDeleting}>
+          
+          DELETE
         </LoaderButton>
+        
       </Form>
     </div>
   );
