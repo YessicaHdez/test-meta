@@ -4,6 +4,9 @@ import { useAppContext } from "../lib/ContextLib";
 import "./Home.css";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
+import Button from 'react-bootstrap/Button';
+import Table from 'react-bootstrap/Table';
+import Stack from 'react-bootstrap/Stack';
 
 export default function Files() {
   const [items, setItems] = useState([]);
@@ -15,51 +18,65 @@ export default function Files() {
       if (!isAuthenticated) {
         return;
       }
-  
-      try {
-        API.get("metadata", "/files").then((response) => {
-        const items = response;
-        setItems(items);
-        })
-        .catch((error) => {
-            console.log(error.response);
-        });
-        
-      } catch (e) {
-        console.log(e);
-      }
-  
+      
+      getFiles();
+   
       setIsLoading(false);
     }
   
     onLoad();
   }, [isAuthenticated]);
-  
- 
+
+   const getFiles = () => {
+    API.get("metadata", "/files")
+      .then((response) => {
+        setItems(response)
+      })
+  }
+
+    const deleteFile = Key => {
+      API.del("metadata", "/files/"+ Key)
+        .then((response) => {
+          getFiles(); 
+        }) 
+  }
 
   function renderItemsList(items) {
     return (
       <>
-        {items.map(({ Key}) => (
-          
-            <ListGroup.Item action>
-              <span className="font-weight-bold">
-                {Key}
-              </span>
-              <br />
-              
-            </ListGroup.Item>
-          
-        ))}
+      <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>Owner</th>
+          <th>Logfile</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+        <tbody>
+          {items.map(({Key, Owner}) => (
+            <tr key={Key}>
+              <td>{Owner.DisplayName}</td>
+              <td>{Key}</td>
+              <td>
+                <Stack direction="horizontal" gap={3}>
+                  <Button variant="primary">Edit</Button>
+                  <Button variant="danger"  onClick={() => deleteFile(Key)}>Delete</Button>
+                  <Button variant="success" disabled>Parse</Button>
+                </Stack>
+              </td>
+            </tr>
+          ))}       
+        </tbody>
+      </Table>
       </>
-    );
+    )
   }
+
 
   function renderLander() {
     return (
       <div className="lander">
-        <h1>Scratch</h1>
-        <p className="text-muted">myapp</p>
+        <h1>There are no logs to parse </h1>
       </div>
     );
   }
@@ -67,7 +84,6 @@ export default function Files() {
   function renderItems() {
     return (
       <div className="items">
-        <h2 className="pb-3 mt-4 mb-3 border-bottom">METADATA DICTIONARY</h2>
         <ListGroup>{!isLoading && renderItemsList(items)}</ListGroup>
       </div>
     );
@@ -75,7 +91,8 @@ export default function Files() {
 
   return (
     <div className="Home">
-      {isAuthenticated ? renderItems() : renderLander()}
+      <h2 className="pb-3 mt-4 mb-3 border-bottom">Staging Logs</h2>
+      {isAuthenticated && items != null  ? renderItems() : renderLander()}
     </div>
   );
 }
