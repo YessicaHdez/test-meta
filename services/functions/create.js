@@ -9,7 +9,7 @@ export const main = handler(async (event) => {
     Item: {
       // The attributes of the item to be created
       dataElement: data.dataElement, 
-      catalog: data.catalog, 
+      catalog: data.catalog.split(","), 
     },
   };
 

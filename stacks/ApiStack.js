@@ -27,6 +27,9 @@ export function ApiStack({ stack, app }) {
       "PUT /dataElement/update/{dataelementid}": "functions/update.main",
       "DELETE /dataElement/delete/{dataelementid}": "functions/delete.main",
       "DELETE /files/{object}": "functions/deleteFile.main",
+      "GET /file/{FileId}": "functions/File.main",
+      "PUT /updatefile/{FileId}": "functions/updateFile.main",
+      "PUT /updateLogFile/{myid}": "functions/updateLogFile.main",
     },
   });
 

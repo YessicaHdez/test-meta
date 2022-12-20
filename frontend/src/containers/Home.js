@@ -10,8 +10,6 @@ export default function Home() {
   const [items, setItems] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
-  
-
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
@@ -28,7 +26,6 @@ export default function Home() {
         
       } catch (e) {
         console.log(e);
-        
       }
       setIsLoading(false);
       

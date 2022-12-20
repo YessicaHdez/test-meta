@@ -3,16 +3,16 @@ import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/ContextLib";
 import "./Home.css";
 import { API } from "aws-amplify";
-import { LinkContainer } from "react-router-bootstrap";
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Stack from 'react-bootstrap/Stack';
+import { useNavigate } from "react-router-dom";
 
 export default function Files() {
   const [items, setItems] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
-
+  const nav = useNavigate();
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
@@ -34,11 +34,16 @@ export default function Files() {
       })
   }
 
+
     const deleteFile = Key => {
       API.del("metadata", "/files/"+ Key)
         .then((response) => {
           getFiles(); 
         }) 
+  }
+
+  const nextPath = (Key)=>{
+    nav(`/filesEdit/${Key}`);
   }
 
   function renderItemsList(items) {
@@ -59,8 +64,8 @@ export default function Files() {
               <td>{Key}</td>
               <td>
                 <Stack direction="horizontal" gap={3}>
-                  <Button variant="primary">Edit</Button>
-                  <Button variant="danger"  onClick={() => deleteFile(Key)}>Delete</Button>
+                  <Button variant="primary" onClick={() => nextPath(Key)}> Edit </Button>
+                  <Button variant="danger" onClick={() => deleteFile(Key)}>Delete</Button>
                   <Button variant="success" disabled>Parse</Button>
                 </Stack>
               </td>

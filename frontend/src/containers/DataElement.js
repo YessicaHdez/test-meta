@@ -25,7 +25,7 @@ export default function DataElement() {
       }
 
       try {
-        API.get("metadata", "/dataElement/LogFile").then((response) => {
+       await  API.get("metadata", "/dataElement/LogFile").then((response) => {
         const items = response;
         setOrder(items.catalog); //get logfile data
         })
@@ -54,7 +54,7 @@ export default function DataElement() {
     }
   
     onLoad();
-  }, [id]);
+  }, [isAuthenticated,id]);
 
   async function handleDelete(event){    
     event.preventDefault();
