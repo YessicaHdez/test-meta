@@ -29,7 +29,6 @@ export function ApiStack({ stack, app }) {
       "DELETE /files/{object}": "functions/deleteFile.main",
       "GET /file/{FileId}": "functions/File.main",
       "PUT /updatefile/{FileId}": "functions/updateFile.main",
-      "PUT /updateLogFile/{myid}": "functions/updateLogFile.main",
     },
   });
 
