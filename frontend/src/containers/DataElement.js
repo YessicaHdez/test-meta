@@ -67,7 +67,7 @@ export default function DataElement() {
     try {
         await API.put("metadata", "/dataElement/update/LogFile",{body: {"catalog":order,"dataElement":"LogFile"}});
         await API.del("metadata", `/dataElement/delete/${id}`);
-        nav("/");
+        nav("/home");
       } catch (e) {
         console.log(e);
         setIsDeleting(false);
