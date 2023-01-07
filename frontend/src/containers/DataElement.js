@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import LoaderButton from "../components/LoaderButton";
 import { API } from "aws-amplify";
 import "./NewDataElement.css";
+import { Auth } from "aws-amplify";
 
 import { useAppContext } from "../lib/ContextLib";
 
@@ -23,9 +24,18 @@ export default function DataElement() {
       if (!isAuthenticated) {
         return;
       }
+      await Auth.currentAuthenticatedUser().then((user) =>{
+        
+        const groups = user.signInUserSession.accessToken.payload["cognito:groups"];//regresa todos sus grupos y es nullo o undefined si no encuentra nada
+        if (groups ==null) {
+           nav('/unautho');
+           return;
+
+        }
+      });
 
       try {
-       await  API.get("metadata", "/dataElement/LogFile").then((response) => {
+       await  API.get("metadata", "/dataElement/Logfile").then((response) => {
         const items = response;
         setOrder(items.catalog); //get logfile data
         })
@@ -38,7 +48,7 @@ export default function DataElement() {
       }
       try {
 
-        API.get("metadata", `/dataElement/${id}`).then((response) => {
+        await API.get("metadata", `/dataElement/${id}`).then((response) => {
         const items = response;
         setCatalog(items.catalog); //catalog
         setElement(items.dataElement);
@@ -65,7 +75,7 @@ export default function DataElement() {
     }
     setIsDeleting(true);
     try {
-        await API.put("metadata", "/dataElement/update/LogFile",{body: {"catalog":order,"dataElement":"LogFile"}});
+        await API.put("metadata", "/dataElement/update/Logfile",{body: {"catalog":order,"dataElement":"Logfile"}});
         await API.del("metadata", `/dataElement/delete/${id}`);
         nav("/home");
       } catch (e) {
@@ -95,9 +105,9 @@ async function handleSubmit(event) {
     }
 
   }
-
-  return (
-    <div className="NewDataElement">
+  function renderForm(){
+    return(
+      <div className="NewDataElement">
       <Form onSubmit={handleSubmit}>
       <Form.Group controlId="element">
         <Form.Label>Data Element</Form.Label>
@@ -151,5 +161,20 @@ async function handleSubmit(event) {
         
       </Form>
     </div>
+    );
+  }
+  function renderLander() {
+    return (
+      <div className="lander">
+        <h1> Metadata Management - No Authorization</h1>
+        <p className="text-muted"></p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="Home">
+      {isAuthenticated ? renderForm() : renderLander()}
+   </div>
   );
 }

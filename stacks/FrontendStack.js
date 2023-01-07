@@ -1,4 +1,4 @@
-import { ReactStaticSite, use } from "@serverless-stack/resources";
+import { StaticSite, use } from "@serverless-stack/resources";
 import { ApiStack } from "./ApiStack";
 import { AuthStack } from "./AuthStack";
 import {  MetadataDB } from "./MetadataDB";
@@ -9,7 +9,7 @@ export function FrontendStack({ stack, app }) {
   const { bucket } = use(MetadataDB);
 
   // Define our React app
-  const site = new ReactStaticSite(stack, "ReactSite", {
+  const site = new StaticSite(stack, "ReactSite", {
     path: "frontend",
     // Pass in our environment variables
     environment: {

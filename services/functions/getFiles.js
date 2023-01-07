@@ -6,7 +6,11 @@ import { S3Client } from "@aws-sdk/client-s3";
 
 
 export const main = async (event) => {
-    const params = { Bucket: process.env.BUCKET_NAME};
+    const myKey = event.headers.key;
+    
+    //console.log(event.requestContext.authorizer.iam.cognitoIdentity.amr);
+    //console.log(event.headers.key);
+    const params = { Bucket: `${process.env.BUCKET_NAME}`, Prefix:`${myKey}/`};
     const client = new S3Client( {region: process.env.BUCKET_REGION });
     const data = await client.send(new ListObjectsCommand(params));
 

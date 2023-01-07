@@ -3,7 +3,7 @@ import { S3Client, DeleteObjectCommand  } from "@aws-sdk/client-s3";
 
  
 export const main = async (event) => {
-    const params = { Bucket: process.env.BUCKET_NAME, Key:event.pathParameters.object};
+    const params = { Bucket: process.env.BUCKET_NAME, Key:event.headers.key};
     //console.log(params);
     const client = new S3Client( {region: process.env.BUCKET_REGION });
     const command = new DeleteObjectCommand(params);

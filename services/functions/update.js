@@ -5,7 +5,7 @@ export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
   const transform = getData();
   function getData(){
-    if(event.pathParameters.dataelementid !== 'LogFile') {return data.catalog.split(",")}else{ return data.catalog }
+    if(event.pathParameters.dataelementid !== 'Logfile') {return data.catalog.split(",")}else{ return data.catalog }
   }
   const params = {
     TableName: process.env.TABLE_NAME,

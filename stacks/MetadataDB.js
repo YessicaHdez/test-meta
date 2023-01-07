@@ -5,7 +5,6 @@ export function MetadataDB({ stack, app }) {
     const bucket = new Bucket(stack, "logfiles", {
         cors: [
           {
-            maxAge: "1 day",
             allowedOrigins: ["*"],
             allowedHeaders: ["*"],
             allowedMethods: ["GET", "PUT", "POST", "DELETE", "HEAD"],

@@ -1,5 +1,5 @@
 {
-  "name": "metadata",
+  "name": "dev-parser-metadata",
   "region": "us-east-1",
   "main": "stacks/index.js"
 }

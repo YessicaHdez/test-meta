@@ -2,22 +2,34 @@ import React, { useState, useEffect } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/ContextLib";
 import "./Home.css";
-import { API } from "aws-amplify";
+import { API,Auth } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
 //import { createTrue } from "typescript";
 
 export default function Home() {
   const [items, setItems] = useState([]);
   const { isAuthenticated } = useAppContext();
+  const [disable, setDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     async function onLoad() {
       if (!isAuthenticated) {
         return;
       }
+      try{
+        const user =  await Auth.currentAuthenticatedUser();
+        //console.log(user);
+        const groups = user.signInUserSession.accessToken.payload["cognito:groups"];//regresa todos sus grupos y es nullo o undefined si no encuentra nada
+        if (groups.includes('admins')) {
+            setDisable(false);
+        }
+        
+        }catch(e){console.log(e);}
       try {
         API.get("metadata", "/dataElement").then((response) => {
+        
         const items = response;
+        //console.log(items);
         setItems(items);
         })
         .catch((error) => {
@@ -33,11 +45,13 @@ export default function Home() {
   
     onLoad();
   }, [isAuthenticated]);
+
+  
   function renderItemsList(items) {
     return (
       <>
         <LinkContainer to="/newDataElement">
-          <ListGroup.Item action className="py-3 text-nowrap text-truncate">
+          <ListGroup.Item disabled={disable} action className="py-3 text-nowrap text-truncate">
            
             <span className="ml-2 font-weight-bold">Create a new </span>
           </ListGroup.Item>
@@ -45,7 +59,7 @@ export default function Home() {
         
         {items.map(({ catalog, dataElement }) => (
           <LinkContainer key={dataElement} to={`/dataElement/${dataElement}`}>
-            <ListGroup.Item  action >
+            <ListGroup.Item disabled={disable}  action >
               <span className="font-weight-bold">
                 {dataElement}
               </span>
@@ -63,7 +77,7 @@ export default function Home() {
   function renderLander() {
     return (
       <div className="lander">
-        <h1> Metadata Management</h1>
+        <h1>Metadata Management - No Authorization</h1>
         <p className="text-muted"></p>
       </div>
     );

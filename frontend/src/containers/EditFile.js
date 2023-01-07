@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
-import { useParams } from "react-router-dom";
 import LoaderButton from "../components/LoaderButton";
 import { API } from "aws-amplify";
 import DropdownList from "react-widgets/DropdownList";
 import "react-widgets/styles.css";
 import "./NewDataElement.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation} from "react-router-dom";
+import { useAppContext } from "../lib/ContextLib";
 
 
 export default function EditFile() {
@@ -14,20 +14,33 @@ export default function EditFile() {
   const [order, setOrder] = useState([]);
   const [dict, setDict] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { id } = useParams();
+  //const { id } = useParams();
+  const { state: { fileID } = {} } = useLocation();
   const [items, setItems] =useState([]);
   const nav = useNavigate();
 
+  const { isAuthenticated } = useAppContext();
+
   useEffect(() => {
     async function onLoad() {
-      
+      if (!isAuthenticated) {
+        return;
+      }
+      console.log();
       try {
         await API.get("metadata", "/dataElement").then((response) => {
         const dict = response;
+        
+        //setOrder(dict[0]);
+        //setDict(dict);
+        //const itemsToRemove = ['Logfile'];
+        //const arr1 = dict.filter(obj => !itemsToRemove.includes(obj.dataElement));
+        //setOrder(dict[0].catalog);
+         
+        const arr1 = dict.shift();
+        setOrder(arr1.catalog);
+        //console.log(dict);
         setDict(dict);
-        const itemsToRemove = ['LogFile'];
-        const arr1 = dict.filter(obj => !itemsToRemove.includes(obj.dataElement));
-        setDict(arr1);
         
         })
         .catch((error) => {
@@ -37,29 +50,32 @@ export default function EditFile() {
       } catch (e) {
         console.log(e);
       }
-      try {
-        await  API.get("metadata", "/dataElement/LogFile").then((response) => {
-         const items = response;
-         setOrder(items.catalog); //get logfile data
-         })
-         .catch((error) => {
-             console.log(error.response);
-         });
+      //try {
+      //  await  API.get("metadata", "/dataElement/LogFile").then((response) => {
+      //   const items = response;
+     //    setOrder(items.catalog); //get logfile data
+     //    })
+      //   .catch((error) => {
+      //       console.log(error.response);
+      //   });
          
-       } catch (e) {
-         console.log(e);
-       }
+      // } catch (e) {
+       //  console.log(e);
+       //}
       setIsLoading(false);
       
     }
     onLoad();
-  }, []);  
+  }, [isAuthenticated]);  
 
   function setName(){
     var newName= ""
-    const actualName=id.split('_');
+    var splitKey= fileID.key.split("/");
+    //console.log(splitKey);
+    const actualName=splitKey[splitKey.length-1].split('_');
     //console.log(actualName);
     const newOrder =order.split('_');
+    //console.log(newOrder);
     //console.log("antes de los for");
     for(var i=0; i<newOrder.length;i++){
       for(var x=0; x<dict.length;x++){
@@ -68,14 +84,14 @@ export default function EditFile() {
             if( i !== newOrder.length-2 ){
               newName+='_';
             } else if(i === newOrder.length-2 ){
-              newName+= '_';
-              newName+= actualName[actualName.length-1];
+              newName+= '_'; 
               ////ewName+='.txt';
             }
           }
       }
       
     }
+    newName+= actualName[actualName.length-1];
     //console.log(newName);
     return newName;
   }
@@ -84,16 +100,17 @@ export default function EditFile() {
 async function handleSubmit(event) {
     event.preventDefault();
     //setIsLoading(true);
+
     const name= setName();
+    //console.log(name);
+    //console.log(fileID);
     try{
-      await API.put("metadata", `/updatefile/${id}`,{body: {"newName":name}});
-      await API.del("metadata", `/files/${id}`);
+      await API.put("metadata", "/updateFile",{headers:{"mykey":fileID.key},body: {"newName":name}});
+      
+      await API.del("metadata", "/filesDel",{headers:{"key":fileID.key}});
       nav("/files");
     }
-    catch(e){}
-    //console.log(name);
-    //console.log(items);
-    //setIsLoading(false);
+    catch(e){console.log(e);}
 
   }
 
@@ -110,15 +127,15 @@ async function handleSubmit(event) {
     
   }
   
-  
-  return (
+  function renderForm(){
+    return(
 
-    <div className="NewDataElement">
+      <div className="NewDataElement">
       <h2 className="pb-3 mt-4 mb-3 border-bottom">EDIT FILES</h2>
         <Form.Group controlId="element">
         <br></br>
         <Form.Label>Actual name:</Form.Label><br></br>
-        <Form.Label>{id}</Form.Label><br></br>
+        <Form.Label>{fileID.key.split("/")[1]}</Form.Label><br></br>
         </Form.Group>
       <Form onSubmit={handleSubmit}>
       
@@ -135,7 +152,7 @@ async function handleSubmit(event) {
             onChange={(value)=> {handlechanges(value,index)}}
             />
         </>
-         ))}
+        ))}
         <br></br>
         <LoaderButton
           block="true"
@@ -147,5 +164,19 @@ async function handleSubmit(event) {
         </LoaderButton>
       </Form>
     </div>
+    );
+  }
+  function renderLander() {
+    return (
+      <div className="lander">
+        <h1>Metadata Management - No Authorizatio</h1>
+        <p className="text-muted"></p>
+      </div>
+    );
+  }
+  return (
+  <div className="Home">
+    {isAuthenticated ? renderForm() : renderLander()}
+  </div>
   );
 }
