@@ -95,7 +95,7 @@ export default function Files() {
   function renderLander() {
     return (
       <div className="lander">
-        {isAuthenticated ? <h1>There are no logs to parse </h1> : <h1>Metadata Management - No Authorization</h1>}
+        {isAuthenticated ? <h1>There are no logs to parse </h1> : <h1>Metadata Management </h1>}
         
       </div>
     );

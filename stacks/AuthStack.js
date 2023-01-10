@@ -17,8 +17,8 @@ export function AuthStack({ stack, app }) {
       userPool:{
         selfSignUpEnabled: false,
        userInvitation: {
-          emailSubject: 'Invite to join our awesome app!',
-          emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
+          emailSubject: 'Invite to join our app!',
+          emailBody: 'Hello {username}, you have been invited to join our app! Your temporary password is {####}.This is the link: https://d535s6voqyhjf.cloudfront.net  ',
           //smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}',
           //mandar tambienn el link
         },
